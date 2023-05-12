@@ -1,5 +1,5 @@
 
-DROP TABLE IF EXISTS tbl_categories;
+DROP TABLE IF EXISTS tbl_categories cascade;
 
 CREATE TABLE tbl_categories (
                                 id BIGINT AUTO_INCREMENT  PRIMARY KEY,
@@ -7,7 +7,7 @@ CREATE TABLE tbl_categories (
 );
 
 
-DROP TABLE IF EXISTS tbl_products;
+DROP TABLE IF EXISTS tbl_products cascade;
 
 CREATE TABLE tbl_products (
                               id BIGINT AUTO_INCREMENT  PRIMARY KEY,
