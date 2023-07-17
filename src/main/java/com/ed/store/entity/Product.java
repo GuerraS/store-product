@@ -1,6 +1,9 @@
 package com.ed.store.entity;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
@@ -10,15 +13,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@AllArgsConstructor @NoArgsConstructor @Builder
 @Entity
-@Table(name= "tbl_product" )
-public class Product {
+@Table(name= "tbl_products" )
+public class Product implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8558525488310754198L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "product_id")
 	private Long id;
 	private String name;
 	private String description;
@@ -35,6 +39,7 @@ public class Product {
 	//Especifica en que columa hace la relacion con la llave foranea
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 	private Category category;
 	
 }
