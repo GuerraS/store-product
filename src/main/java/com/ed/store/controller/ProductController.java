@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.ed.store.entity.Category;
 import com.ed.store.entity.Product;
 import com.ed.store.service.ProductService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/products")
@@ -56,7 +60,12 @@ public class ProductController {
 	// corregir los update e insert con un bad request si es qye fallan
 	@PostMapping("/create")
 	@ResponseBody
-	public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+	public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product, BindingResult result) {
+		if(result.hasErrors()) {
+			ErrorMessage errorMessage = new ErrorMessage();
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage.formatMessaage(result) );
+		}
+		
 		Product productCreate = productService.createProduct(product);
 		return ResponseEntity.status(HttpStatus.CREATED).body(product);
 	};
@@ -69,7 +78,22 @@ public class ProductController {
 			return ResponseEntity.notFound().build();	
 		return ResponseEntity.ok(product);
 	};
-//	public Product deleteProduct(Long id);
+	
+	@DeleteMapping(value="/{id}")
+	public ResponseEntity<Product> deleteProduct(@PathVariable(value = "id") Long id) {
+		Product updateProduct = productService.deleteProduct(id);
+		if (null == updateProduct)
+			return ResponseEntity.notFound().build();	
+		return ResponseEntity.ok(updateProduct);
+	};
+	
+	@PutMapping(value="/{id}/stock")
+	public ResponseEntity<Product> updateStock(@PathVariable(value = "id") Long id, @RequestParam(name = "quantity") Double quantity) {
+		Product updateProduct = productService.updateStock(id, quantity);
+		if (null == updateProduct)
+			return ResponseEntity.notFound().build();	
+		return ResponseEntity.ok(updateProduct);
+	};
 //	public List<Product> findByCategory(Category category);
 //	public Product updateStock(Long id, Double quantity);
 }

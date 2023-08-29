@@ -73,6 +73,7 @@ public class ProductServiceImpl implements ProductService{
 		}
 		
 		Double stock = productDB.getStock() + quantity;
+		productDB.setStock(stock);
 		return productRepository.save(productDB);
 
 		
